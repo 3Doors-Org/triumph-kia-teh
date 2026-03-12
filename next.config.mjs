@@ -5,9 +5,9 @@ const nextConfig = {
   images: {
     unoptimized: true,
   },
-  // Custom domain deployment (triumphkiateh.com) serves from site root.
-  // Keep basePath empty so routes and assets resolve correctly.
-  basePath: "",
+  // Deploying as a GitHub project page at /triumph-kia-teh/.
+  // This ensures CSS and JS load correctly under the repo path.
+  basePath: "/triumph-kia-teh",
 };
 
 export default nextConfig;
