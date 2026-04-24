@@ -15,6 +15,7 @@
 ## Mandatory cross-cutting baseline
 
 This week must implement in full compliance with `docs/implementation-plan/production-system-implementation-spec.md`.
+
 ## Daily Acceptance Gate (Applies to Day 1-Day 7)
 
 Before marking any day complete, verify all of the following:
@@ -25,7 +26,6 @@ Before marking any day complete, verify all of the following:
 - [ ] Analytics work for the day uses canonical event names and avoids duplicate firing/PII leakage.
 - [ ] Contract consistency is preserved (`/api/v1/*`, RBAC rules, schema enums, route conventions).
 - [ ] No unresolved blocker remains that would invalidate downstream days in the same week.
-
 
 ---
 

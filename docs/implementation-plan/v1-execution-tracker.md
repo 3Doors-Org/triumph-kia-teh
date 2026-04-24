@@ -35,6 +35,7 @@ Plan: `week-01-foundation-and-security-baseline.md`
 - [ ] Week signed off
 
 Evidence:
+
 - PRs:
 - CI runs:
 - Reports:
@@ -50,6 +51,7 @@ Plan: `week-02-database-ci-cd-and-core-ui-shell.md`
 - [ ] Week signed off
 
 Evidence:
+
 - PRs:
 - CI runs:
 - Reports:
@@ -65,6 +67,7 @@ Plan: `week-03-public-core-pages-and-contact-foundation.md`
 - [ ] Week signed off
 
 Evidence:
+
 - PRs:
 - CI runs:
 - Reports:
@@ -80,6 +83,7 @@ Plan: `week-04-public-pages-completion-and-conversion-flow.md`
 - [ ] Week signed off
 
 Evidence:
+
 - PRs:
 - CI runs:
 - Reports:
@@ -95,6 +99,7 @@ Plan: `week-05-writing-research-and-impact-implementation.md`
 - [ ] Week signed off
 
 Evidence:
+
 - PRs:
 - CI runs:
 - Reports:
@@ -110,6 +115,7 @@ Plan: `week-06-public-content-depth-and-mvp-readiness.md`
 - [ ] Week signed off
 
 Evidence:
+
 - PRs:
 - CI runs:
 - Reports:
@@ -125,6 +131,7 @@ Plan: `week-07-achievements-media-auth-and-admin-entry.md`
 - [ ] Week signed off
 
 Evidence:
+
 - PRs:
 - CI runs:
 - Reports:
@@ -140,6 +147,7 @@ Plan: `week-08-mvp-launch-and-stabilization.md`
 - [ ] Week signed off
 
 Evidence:
+
 - PRs:
 - CI runs:
 - Reports:
@@ -155,6 +163,7 @@ Plan: `week-09-admin-shell-and-content-cms-core.md`
 - [ ] Week signed off
 
 Evidence:
+
 - PRs:
 - CI runs:
 - Reports:
@@ -170,6 +179,7 @@ Plan: `week-10-admin-crud-expansion-and-assets.md`
 - [ ] Week signed off
 
 Evidence:
+
 - PRs:
 - CI runs:
 - Reports:
@@ -185,6 +195,7 @@ Plan: `week-11-leads-navigation-exit-intent-and-admin-complete.md`
 - [ ] Week signed off
 
 Evidence:
+
 - PRs:
 - CI runs:
 - Reports:
@@ -200,6 +211,7 @@ Plan: `week-12-animation-foundation-and-motion-system.md`
 - [ ] Week signed off
 
 Evidence:
+
 - PRs:
 - CI runs:
 - Reports:
@@ -215,6 +227,7 @@ Plan: `week-13-animation-polish-and-performance-guardrails.md`
 - [ ] Week signed off
 
 Evidence:
+
 - PRs:
 - CI runs:
 - Reports:
@@ -230,6 +243,7 @@ Plan: `week-14-analytics-instrumentation-and-dashboard-insights.md`
 - [ ] Week signed off
 
 Evidence:
+
 - PRs:
 - CI runs:
 - Reports:
@@ -245,6 +259,7 @@ Plan: `week-15-system-hardening-full-qa-and-release-readiness.md`
 - [ ] Week signed off
 
 Evidence:
+
 - PRs:
 - CI runs:
 - Reports:
@@ -260,6 +275,7 @@ Plan: `week-16-full-v1-launch-and-operational-handover.md`
 - [ ] Week signed off
 
 Evidence:
+
 - PRs:
 - CI runs:
 - Reports:
