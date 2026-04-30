@@ -1,29 +1,58 @@
-# Triumph Kia Teh Platform
+# Triumph Kia Teh - Personal Website Platform
 
-Production-grade implementation workspace for the Triumph Kia Teh platform.
+Enterprise-grade implementation workspace for the Triumph Kia Teh digital platform.  
+The project uses a security-first baseline with documented implementation plans, CI controls, and production deployment scaffolding.
 
-## Repository structure
+## Tech Stack
 
-- `docs/` canonical product, design, security, and delivery specifications
-- `web/` Next.js (App Router) application workspace
+- Next.js 16 (App Router)
+- TypeScript (strict mode)
+- Tailwind CSS
+- Drizzle ORM + PostgreSQL
+- pnpm workspaces
+- GitHub Actions CI/CD
 
-## Engineering baseline
+## Repository Layout
+
+- `web/` - application source code
+- `docs/` - implementation plans, architecture, security, and runbooks
+- `.github/workflows/` - CI and deployment workflows
+- `scripts/` - operational and database scripts
+
+## Prerequisites
 
 - Node.js `20.19.5`
 - pnpm `10.19.0`
-- Package manager: `pnpm`
-- Branch model: protected `main` with PR-only changes
+- Docker + Docker Compose (for containerized workflows)
 
-## Quick start
+## Local Development
 
 ```bash
 pnpm install
 pnpm dev
 ```
 
-The app runs at [http://localhost:3000](http://localhost:3000).
+Application URL: [http://localhost:3000](http://localhost:3000)
 
-## Quality and security checks
+## Environment Configuration
+
+1. Copy `.env.example` to `.env`.
+2. Populate required values (`DATABASE_URL`, `MIGRATION_DATABASE_URL`, `NEXTAUTH_SECRET`, `NEXTAUTH_URL`).
+3. Keep `.env` local only; do not commit secrets.
+
+## Database Workflows
+
+```bash
+pnpm db:generate
+pnpm db:migrate
+pnpm db:seed:dev
+```
+
+Notes:
+- `db:migrate` is the non-interactive migration path used in CI/deploy contexts.
+- Seeding is guarded and opt-in (`ALLOW_SEED=true`).
+
+## Quality and Security Gates
 
 ```bash
 pnpm lint
@@ -32,27 +61,36 @@ pnpm build
 pnpm audit:deps
 ```
 
-## Production container scaffold (not active deployment)
+CI also runs:
+- migration check against ephemeral PostgreSQL
+- TruffleHog secret scanning
 
-This repo includes deployment scaffolding for later production rollout:
+## CI/CD
+
+- `CI` workflow (`.github/workflows/ci.yml`)
+  - install, migrate check, lint, typecheck, build, audit, secret scan
+- `Deploy Staging` workflow (`.github/workflows/deploy-staging.yml`)
+  - SSH deploy, migrate, health check, failure log artifact
+
+## Deployment
+
+Production-oriented scaffolding is included:
 
 - `web/Dockerfile`
 - `docker-compose.production.yml`
 
-These files are committed now for Week 1 foundation work, but deployment can remain paused until the full website is ready.
+Operational guidance:
+- `docs/deployment_runbook.md`
+- `docs/runbooks/staging-deploy-secrets.md`
+- `docs/runbooks/staging-day7-verification.md`
 
-## Documentation
-
-Start with:
+## Canonical Week Plans
 
 - `docs/implementation-plan/week-01-foundation-and-security-baseline.md`
-- `docs/implementation-plan/production-system-implementation-spec.md`
-- `docs/09_security_architecture_review_document.md`
+- `docs/implementation-plan/week-02-database-ci-cd-and-core-ui-shell.md`
 
-## Agent guidance files
+## Security Notice
 
-`web/AGENTS.md` and `web/CLAUDE.md` are AI assistant guidance files generated for coding tools. They are expected, safe to keep, and do not affect runtime behavior.
-
-## Security notice
-
-Never commit real secrets. Only commit `.env.example` placeholders.
+- Never commit real secrets.
+- Rotate credentials immediately if exposed.
+- Commit only `.env.example` placeholders.
