@@ -1,0 +1,53 @@
+name: Deploy Staging
+
+on:
+  workflow_dispatch:
+  push:
+    branches: ["staging"]
+
+permissions:
+  contents: read
+
+jobs:
+  deploy-staging:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    environment: staging
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup SSH agent
+        uses: webfactory/ssh-agent@v0.9.0
+        with:
+          ssh-private-key: ${{ secrets.STAGING_SSH_KEY }}
+
+      - name: Add staging host to known_hosts
+        run: |
+          mkdir -p ~/.ssh
+          ssh-keyscan -p "${{ secrets.STAGING_PORT }}" "${{ secrets.STAGING_HOST }}" >> ~/.ssh/known_hosts
+
+      - name: Deploy and migrate
+        id: deploy
+        run: |
+          set -euo pipefail
+          ssh -p "${{ secrets.STAGING_PORT }}" "${{ secrets.STAGING_USER }}@${{ secrets.STAGING_HOST }}" '
+            set -euo pipefail
+            cd "${{ secrets.STAGING_APP_DIR }}"
+            git fetch origin
+            git checkout "${{ github.ref_name }}"
+            git reset --hard "origin/${{ github.ref_name }}"
+            docker compose -f docker-compose.production.yml build web
+            docker compose -f docker-compose.production.yml up -d web
+            docker compose -f docker-compose.production.yml exec -T web pnpm db:migrate
+            curl --fail --show-error --silent "${{ secrets.STAGING_HEALTHCHECK_URL }}"
+          ' | tee staging-deploy.log
+
+      - name: Upload deploy logs on failure
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: staging-deploy-logs
+          path: staging-deploy.log
+          retention-days: 7

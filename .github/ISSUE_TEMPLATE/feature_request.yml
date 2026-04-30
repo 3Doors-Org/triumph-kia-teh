@@ -1,0 +1,33 @@
+name: Feature request
+description: Propose a scoped feature aligned with V1 delivery.
+title: "[Feature]: "
+labels: ["type:feature"]
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem statement
+      description: What user or business problem does this solve?
+    validations:
+      required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Proposed solution
+      description: Include route/screen/API scope and expected behavior.
+    validations:
+      required: true
+  - type: textarea
+    id: acceptance
+    attributes:
+      label: Acceptance criteria
+      description: Testable criteria for completion.
+    validations:
+      required: true
+  - type: checkboxes
+    id: contract
+    attributes:
+      label: Contract alignment
+      options:
+        - label: This request will keep canonical contracts (`/api/v1/*`, admin route, schema rules).
+          required: true

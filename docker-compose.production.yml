@@ -1,0 +1,26 @@
+services:
+  web:
+    build:
+      context: .
+      dockerfile: web/Dockerfile
+    image: personal-website-web:production
+    restart: unless-stopped
+    environment:
+      NODE_ENV: production
+      NEXTAUTH_URL: ${NEXTAUTH_URL:?Set NEXTAUTH_URL in runtime env}
+      NEXTAUTH_SECRET: ${NEXTAUTH_SECRET:?Set NEXTAUTH_SECRET in runtime env}
+      DATABASE_URL: ${DATABASE_URL:?Set DATABASE_URL in runtime env}
+      MIGRATION_DATABASE_URL: ${MIGRATION_DATABASE_URL:-${DATABASE_URL}}
+      NEXT_PUBLIC_APP_URL: ${NEXT_PUBLIC_APP_URL:-https://triumphkiateh.com}
+      VIRTUAL_HOST: ${WEB_VIRTUAL_HOST:-triumphkiateh.com,www.triumphkiateh.com}
+      VIRTUAL_PORT: ${WEB_VIRTUAL_PORT:-3000}
+      LETSENCRYPT_HOST: ${WEB_LETSENCRYPT_HOST:-triumphkiateh.com,www.triumphkiateh.com}
+      LETSENCRYPT_EMAIL: ${LETSENCRYPT_EMAIL:?Set LETSENCRYPT_EMAIL in runtime env}
+    ports:
+      - "3000:3000"
+    networks:
+      - proxy-net
+
+networks:
+  proxy-net:
+    external: true

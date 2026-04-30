@@ -1,0 +1,37 @@
+name: Security issue
+description: Track a potential security vulnerability or control gap.
+title: "[Security]: "
+labels: ["type:security", "priority:high"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Do not include exploit code, credentials, or sensitive production details.
+  - type: textarea
+    id: summary
+    attributes:
+      label: Security concern
+      description: Describe the threat and affected area.
+    validations:
+      required: true
+  - type: textarea
+    id: risk
+    attributes:
+      label: Risk assessment
+      description: Likelihood, impact, and potential blast radius.
+    validations:
+      required: true
+  - type: textarea
+    id: mitigation
+    attributes:
+      label: Proposed mitigation
+      description: Include immediate containment and long-term fix.
+    validations:
+      required: true
+  - type: checkboxes
+    id: controls
+    attributes:
+      label: Control alignment
+      options:
+        - label: Checked against `docs/09_security_architecture_review_document.md`.
+          required: true

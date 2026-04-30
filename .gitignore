@@ -1,0 +1,38 @@
+# workspace
+node_modules/
+.pnpm-store/
+
+# app build outputs
+web/node_modules/
+web/.next/
+web/out/
+web/coverage/
+
+# environment and secrets
+.env
+.env.*
+!.env.example
+web/.env
+web/.env.*
+!web/.env.example
+
+# local-only compose overrides
+docker-compose*.override.yml
+
+# logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.pnpm-debug.log*
+
+# OS/editor
+.DS_Store
+.idea/
+.vscode/
+.cursor/
+
+# markdown docs (keep local by default)
+*.md
+!README.md
+!CONTRIBUTING.md
