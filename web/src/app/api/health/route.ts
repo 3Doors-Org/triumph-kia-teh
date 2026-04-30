@@ -1,12 +1,11 @@
-import { sql } from "drizzle-orm";
 import { NextResponse } from "next/server";
-
-import { db } from "@/lib/db";
 
 export async function GET() {
   const startedAt = Date.now();
 
   try {
+    const { sql } = await import("drizzle-orm");
+    const { db } = await import("@/lib/db");
     await db.execute(sql`select 1`);
 
     return NextResponse.json(

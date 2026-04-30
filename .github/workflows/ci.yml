@@ -13,6 +13,11 @@ jobs:
   quality-and-security:
     runs-on: ubuntu-latest
     timeout-minutes: 20
+    env:
+      DATABASE_URL: postgresql://migration_user:migration_password@localhost:5432/personal_website
+      MIGRATION_DATABASE_URL: postgresql://migration_user:migration_password@localhost:5432/personal_website
+      NEXTAUTH_URL: http://localhost:3000
+      NEXTAUTH_SECRET: ci-placeholder-secret-at-least-32-chars
     services:
       postgres:
         image: postgres:15-alpine
@@ -48,9 +53,6 @@ jobs:
         run: pnpm install --frozen-lockfile
 
       - name: Migration dry-run against ephemeral Postgres
-        env:
-          DATABASE_URL: postgresql://migration_user:migration_password@localhost:5432/personal_website
-          MIGRATION_DATABASE_URL: postgresql://migration_user:migration_password@localhost:5432/personal_website
         run: pnpm --dir web db:migrate
 
       - name: Lint
