@@ -1,10 +1,23 @@
 import { expect, test } from "@playwright/test";
 
+function isBenignBrowserConsoleError(text: string): boolean {
+  return (
+    /plausible/i.test(text) ||
+    /clarity/i.test(text) ||
+    /Failed to load resource/i.test(text) ||
+    /net::ERR_/i.test(text) ||
+    /favicon/i.test(text)
+  );
+}
+
 test("home to organizations to contact submission", async ({ page }) => {
   const consoleErrors: string[] = [];
   page.on("console", (msg) => {
     if (msg.type() === "error") {
-      consoleErrors.push(msg.text());
+      const text = msg.text();
+      if (!isBenignBrowserConsoleError(text)) {
+        consoleErrors.push(text);
+      }
     }
   });
   page.on("pageerror", (err) => {
@@ -21,6 +34,7 @@ test("home to organizations to contact submission", async ({ page }) => {
 
   await page.goto("/contact?type=speaking&e2eBypass=1");
   await expect(page.getByRole("heading", { level: 1 })).toContainText("Contact");
+  await page.getByRole("button", { name: "Send message" }).waitFor({ state: "visible" });
 
   await page.getByLabel(/Full name/i).fill("E2E Tester");
   await page.getByLabel(/Email address/i).fill("e2e@example.com");

@@ -18,6 +18,9 @@ test.describe("public motion accessibility smoke", () => {
     test(`reduced-motion route remains accessible: ${path}`, async ({ page }) => {
       await page.emulateMedia({ reducedMotion: "reduce" });
       await page.goto(path);
+      if (path === "/contact") {
+        await page.getByRole("button", { name: "Send message" }).waitFor({ state: "visible" });
+      }
 
       const results = await new AxeBuilder({ page })
         .disableRules(["color-contrast"]) // Keep smoke test stable across CI rendering variance.
