@@ -91,8 +91,16 @@ jobs:
         env:
           CI: true
           NEXT_PUBLIC_APP_URL: http://127.0.0.1:3000
+          NEXTAUTH_URL: http://127.0.0.1:3000
+          NEXTAUTH_SECRET: ci-placeholder-secret-at-least-32-chars
+          IP_HASH_SALT: ci-e2e-ip-hash-salt
           NEXT_PUBLIC_E2E_BYPASS_TURNSTILE: "true"
           TEST_BYPASS_TURNSTILE: "true"
+          NEXT_PUBLIC_ENABLE_ANALYTICS_DEV: "true"
+          NEXT_PUBLIC_PLAUSIBLE_DOMAIN: triumphkiateh.com
+          NEXT_PUBLIC_PLAUSIBLE_API_HOST: https://plausible.io
+          PLAUSIBLE_API_HOST: https://plausible.io
+          NEXT_PUBLIC_CLARITY_PROJECT_ID: ci-e2e-clarity
 
       - name: Dependency audit (critical only)
         run: pnpm audit:deps

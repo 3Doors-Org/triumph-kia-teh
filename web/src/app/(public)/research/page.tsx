@@ -27,6 +27,7 @@ export default async function ResearchPage({
     <section className="-mx-4 bg-muted/30 px-4 py-10 md:rounded-2xl md:px-6 md:py-12">
       <RevealSection as="header" enabled={isRevealEnabled("research", "header")} className="mb-8 space-y-3 text-center">
         <p className="text-xs font-semibold uppercase tracking-[0.18em] text-(--color-accent)">Research</p>
+        <h1 className="text-4xl font-semibold">Research</h1>
         <p className="mx-auto max-w-2xl text-base leading-relaxed text-(--color-muted-fg)">
           Rigorous studies and analytical models focused on decision systems, institutional behavior, and social
           outcomes.

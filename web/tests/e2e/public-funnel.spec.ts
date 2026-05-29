@@ -13,7 +13,7 @@ test("home to organizations to contact submission", async ({ page }) => {
 
   await page.goto("/");
   await expect(page.getByRole("heading", { level: 1 })).toContainText(
-    "Practitioner-Scholar",
+    "Practitioner and scholar",
   );
 
   await page.goto("/organizations");

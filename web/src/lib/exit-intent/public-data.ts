@@ -19,25 +19,33 @@ export type PublicExitIntentPayload = {
 };
 
 async function loadExitIntentFromDb(): Promise<PublicExitIntentPayload> {
-  const [row] = await db
-    .select({
-      isActive: exitIntentConfig.isActive,
-      triggerDelayMs: exitIntentConfig.triggerDelayMs,
-      contexts: exitIntentConfig.contexts,
-      updatedAt: exitIntentConfig.updatedAt,
-    })
-    .from(exitIntentConfig)
-    .where(eq(exitIntentConfig.id, 1))
-    .limit(1);
+  const emptyPayload: PublicExitIntentPayload = {
+    schemaVersion: EXIT_INTENT_SCHEMA_VERSION,
+    isActive: false,
+    triggerDelayMs: 3000,
+    contexts: {},
+    updatedAt: new Date(0).toISOString(),
+  };
+
+  let row;
+
+  try {
+    [row] = await db
+      .select({
+        isActive: exitIntentConfig.isActive,
+        triggerDelayMs: exitIntentConfig.triggerDelayMs,
+        contexts: exitIntentConfig.contexts,
+        updatedAt: exitIntentConfig.updatedAt,
+      })
+      .from(exitIntentConfig)
+      .where(eq(exitIntentConfig.id, 1))
+      .limit(1);
+  } catch {
+    return emptyPayload;
+  }
 
   if (!row) {
-    return {
-      schemaVersion: EXIT_INTENT_SCHEMA_VERSION,
-      isActive: false,
-      triggerDelayMs: 3000,
-      contexts: {},
-      updatedAt: new Date(0).toISOString(),
-    };
+    return emptyPayload;
   }
 
   const normalizedContexts: Partial<Record<ExitIntentContextKey, ExitIntentContextBlock>> = {};

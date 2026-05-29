@@ -5,7 +5,7 @@ test.describe("/research pages", () => {
     await page.goto("/research");
     await expect(page.getByRole("heading", { name: "Research" })).toBeVisible();
 
-    const emptyState = page.getByText("No research items match the selected filter.");
+    const emptyState = page.getByText("No research items available yet.");
     const seededTitle = page.getByRole("link", {
       name: "Computational Modeling of Social Influence in Investment Decision-Making: Market Sentiment vs. Learning Effects in Human Stock Choice Task",
     });

@@ -77,22 +77,26 @@ export async function getOrganizationBySlug(slug: string) {
     return null;
   }
 
-  const [metrics, relatedWriting] = await Promise.all([
-    db.select().from(orgMetrics).where(eq(orgMetrics.orgId, organization.id)).orderBy(asc(orgMetrics.sortOrder)),
-    db
-      .select({
-        title: posts.title,
-        slug: posts.slug,
-        summary: posts.summary,
-        door: posts.door,
-      })
-      .from(posts)
-      .where(postsPublishedWhere())
-      .orderBy(desc(posts.publishedAt))
-      .limit(3),
-  ]);
+  try {
+    const [metrics, relatedWriting] = await Promise.all([
+      db.select().from(orgMetrics).where(eq(orgMetrics.orgId, organization.id)).orderBy(asc(orgMetrics.sortOrder)),
+      db
+        .select({
+          title: posts.title,
+          slug: posts.slug,
+          summary: posts.summary,
+          door: posts.door,
+        })
+        .from(posts)
+        .where(postsPublishedWhere())
+        .orderBy(desc(posts.publishedAt))
+        .limit(3),
+    ]);
 
-  return { organization, metrics, relatedWriting };
+    return { organization, metrics, relatedWriting };
+  } catch {
+    return { organization, metrics: [], relatedWriting: [] };
+  }
 }
 
 export async function getCommunityImpactPage(filters: CommunityImpactFilters, cursor?: string) {

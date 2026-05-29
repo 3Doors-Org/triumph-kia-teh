@@ -7,6 +7,26 @@ import { navigationConfig } from "@/lib/db/schema";
 
 export type PublicNavItem = { label: string; href: string; enabled: boolean };
 
+const DEFAULT_PUBLIC_NAVIGATION: {
+  navItems: PublicNavItem[];
+  footerLinks: PublicNavItem[];
+} = {
+  navItems: [
+    { label: "About", href: "/about", enabled: true },
+    { label: "Organizations", href: "/organizations", enabled: true },
+    { label: "Community-Impact", href: "/community-impact", enabled: true },
+    { label: "Achievements", href: "/achievements", enabled: true },
+    { label: "Media", href: "/media", enabled: true },
+    { label: "Writing", href: "/writing", enabled: true },
+    { label: "Research", href: "/research", enabled: true },
+    { label: "Contact", href: "/contact", enabled: true },
+  ],
+  footerLinks: [
+    { label: "Home", href: "/", enabled: true },
+    { label: "About", href: "/about", enabled: true },
+  ],
+};
+
 function normalizeDisplayLabel(label: string, href: string): string {
   if (href === "/community-impact") return "Community-Impact";
   return label;
@@ -27,25 +47,35 @@ async function loadNavigationFromDb(): Promise<{
   footerLinks: PublicNavItem[];
   updatedAt: string;
 }> {
-  const [row] = await db
-    .select({
-      navItems: navigationConfig.navItems,
-      footerLinks: navigationConfig.footerLinks,
-      updatedAt: navigationConfig.updatedAt,
-    })
-    .from(navigationConfig)
-    .where(eq(navigationConfig.id, 1))
-    .limit(1);
+  try {
+    const [row] = await db
+      .select({
+        navItems: navigationConfig.navItems,
+        footerLinks: navigationConfig.footerLinks,
+        updatedAt: navigationConfig.updatedAt,
+      })
+      .from(navigationConfig)
+      .where(eq(navigationConfig.id, 1))
+      .limit(1);
 
-  if (!row) {
-    return { navItems: [], footerLinks: [], updatedAt: new Date(0).toISOString() };
+    if (!row) {
+      return {
+        ...DEFAULT_PUBLIC_NAVIGATION,
+        updatedAt: new Date(0).toISOString(),
+      };
+    }
+
+    return {
+      navItems: normalizeNavigationItems(row.navItems),
+      footerLinks: normalizeNavigationItems(row.footerLinks),
+      updatedAt: row.updatedAt.toISOString(),
+    };
+  } catch {
+    return {
+      ...DEFAULT_PUBLIC_NAVIGATION,
+      updatedAt: new Date(0).toISOString(),
+    };
   }
-
-  return {
-    navItems: normalizeNavigationItems(row.navItems),
-    footerLinks: normalizeNavigationItems(row.footerLinks),
-    updatedAt: row.updatedAt.toISOString(),
-  };
 }
 
 export const getCachedPublicNavigation = unstable_cache(

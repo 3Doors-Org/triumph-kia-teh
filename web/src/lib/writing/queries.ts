@@ -83,22 +83,38 @@ export async function getWritingPostsPage(
   const whereClause = buildWritingListConditions(filters, cursorPayload);
 
   const take = Math.min(Math.max(limit, 1), 100);
-  const dbRows = await db
-    .select({
-      id: posts.id,
-      title: posts.title,
-      slug: posts.slug,
-      excerpt: posts.summary,
-      door: posts.door,
-      tags: posts.tags,
-      publishedAt: posts.publishedAt,
-      createdAt: posts.createdAt,
-      updatedAt: posts.updatedAt,
-    })
-    .from(posts)
-    .where(whereClause)
-    .orderBy(desc(posts.publishedAt), desc(posts.id))
-    .limit(take + 1);
+  let dbRows: Array<{
+    id: string;
+    title: string;
+    slug: string;
+    excerpt: string | null;
+    door: string | null;
+    tags: string[];
+    publishedAt: Date | null;
+    createdAt: Date;
+    updatedAt: Date;
+  }> = [];
+
+  try {
+    dbRows = await db
+      .select({
+        id: posts.id,
+        title: posts.title,
+        slug: posts.slug,
+        excerpt: posts.summary,
+        door: posts.door,
+        tags: posts.tags,
+        publishedAt: posts.publishedAt,
+        createdAt: posts.createdAt,
+        updatedAt: posts.updatedAt,
+      })
+      .from(posts)
+      .where(whereClause)
+      .orderBy(desc(posts.publishedAt), desc(posts.id))
+      .limit(take + 1);
+  } catch {
+    return { rows: [], nextCursor: null };
+  }
 
   const hasMore = dbRows.length > take;
   const slice = hasMore ? dbRows.slice(0, take) : dbRows;
@@ -132,10 +148,15 @@ export async function getWritingFilterOptions(): Promise<{
   doors: WritingDoor[];
   tags: string[];
 }> {
-  const rows = await db
-    .select({ door: posts.door, tags: posts.tags })
-    .from(posts)
-    .where(postsPublishedWhere());
+  let rows: Array<{ door: string | null; tags: string[] }> = [];
+  try {
+    rows = await db
+      .select({ door: posts.door, tags: posts.tags })
+      .from(posts)
+      .where(postsPublishedWhere());
+  } catch {
+    return { doors: [], tags: [] };
+  }
 
   const doorSet = new Set<string>();
   const tagSet = new Set<string>();
@@ -158,32 +179,42 @@ export async function getWritingFilterOptions(): Promise<{
 }
 
 export async function getPublishedWritingSlugs(): Promise<string[]> {
-  const rows = await db
-    .select({ slug: posts.slug })
-    .from(posts)
-    .where(postsPublishedWhere())
-    .orderBy(desc(posts.publishedAt), desc(posts.id));
+  try {
+    const rows = await db
+      .select({ slug: posts.slug })
+      .from(posts)
+      .where(postsPublishedWhere())
+      .orderBy(desc(posts.publishedAt), desc(posts.id));
 
-  return rows.map((row) => row.slug);
+    return rows.map((row) => row.slug);
+  } catch {
+    return [];
+  }
 }
 
 export async function getPublishedWritingPostBySlug(slug: string): Promise<WritingPostDetail | null> {
-  const [row] = await db
-    .select({
-      id: posts.id,
-      title: posts.title,
-      slug: posts.slug,
-      excerpt: posts.summary,
-      door: posts.door,
-      tags: posts.tags,
-      bodyJson: posts.bodyJson,
-      publishedAt: posts.publishedAt,
-      createdAt: posts.createdAt,
-      updatedAt: posts.updatedAt,
-    })
-    .from(posts)
-    .where(and(postsPublishedWhere(), eq(posts.slug, slug)))
-    .limit(1);
+  let row;
+
+  try {
+    [row] = await db
+      .select({
+        id: posts.id,
+        title: posts.title,
+        slug: posts.slug,
+        excerpt: posts.summary,
+        door: posts.door,
+        tags: posts.tags,
+        bodyJson: posts.bodyJson,
+        publishedAt: posts.publishedAt,
+        createdAt: posts.createdAt,
+        updatedAt: posts.updatedAt,
+      })
+      .from(posts)
+      .where(and(postsPublishedWhere(), eq(posts.slug, slug)))
+      .limit(1);
+  } catch {
+    return null;
+  }
 
   if (!row) {
     return null;
@@ -209,22 +240,27 @@ export async function getRelatedPublishedWritingPosts(
 ): Promise<WritingListRow[]> {
   const relatedWhere = post.door ? and(postsPublishedWhere(), eq(posts.door, post.door)) : postsPublishedWhere();
 
-  const candidateRows = await db
-    .select({
-      id: posts.id,
-      title: posts.title,
-      slug: posts.slug,
-      excerpt: posts.summary,
-      door: posts.door,
-      tags: posts.tags,
-      publishedAt: posts.publishedAt,
-      createdAt: posts.createdAt,
-      updatedAt: posts.updatedAt,
-    })
-    .from(posts)
-    .where(relatedWhere)
-    .orderBy(desc(posts.publishedAt), desc(posts.id))
-    .limit(30);
+  let candidateRows: WritingListRow[] = [];
+  try {
+    candidateRows = await db
+      .select({
+        id: posts.id,
+        title: posts.title,
+        slug: posts.slug,
+        excerpt: posts.summary,
+        door: posts.door,
+        tags: posts.tags,
+        publishedAt: posts.publishedAt,
+        createdAt: posts.createdAt,
+        updatedAt: posts.updatedAt,
+      })
+      .from(posts)
+      .where(relatedWhere)
+      .orderBy(desc(posts.publishedAt), desc(posts.id))
+      .limit(30);
+  } catch {
+    return [];
+  }
 
   const filteredCandidates = candidateRows.filter((row) => row.id !== post.id);
   const postTagSet = new Set(post.tags.map((tag) => tag.toLowerCase()));
