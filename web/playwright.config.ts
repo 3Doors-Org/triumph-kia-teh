@@ -22,6 +22,11 @@ export default defineConfig({
         process.env.DATABASE_URL ??
         "postgresql://migration_user:migration_password@127.0.0.1:5432/personal_website",
       NEXTAUTH_URL: process.env.NEXTAUTH_URL ?? "http://127.0.0.1:3000",
+      NEXT_PUBLIC_APP_URL: process.env.NEXT_PUBLIC_APP_URL ?? "http://127.0.0.1:3000",
+      NEXT_PUBLIC_SITE_URL:
+        process.env.NEXT_PUBLIC_SITE_URL ??
+        process.env.NEXT_PUBLIC_APP_URL ??
+        "http://127.0.0.1:3000",
       NEXTAUTH_SECRET:
         process.env.NEXTAUTH_SECRET ?? "ci-placeholder-secret-at-least-32-chars",
       IP_HASH_SALT: process.env.IP_HASH_SALT ?? "ci-e2e-ip-hash-salt",

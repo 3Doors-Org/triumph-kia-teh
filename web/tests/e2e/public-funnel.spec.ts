@@ -1,5 +1,7 @@
 import { expect, test } from "@playwright/test";
 
+import { waitForContactForm } from "./helpers/forms";
+
 function isBenignBrowserConsoleError(text: string): boolean {
   return (
     /plausible/i.test(text) ||
@@ -34,7 +36,7 @@ test("home to organizations to contact submission", async ({ page }) => {
 
   await page.goto("/contact?type=speaking&e2eBypass=1");
   await expect(page.getByRole("heading", { level: 1 })).toContainText("Contact");
-  await page.getByRole("button", { name: "Send message" }).waitFor({ state: "visible" });
+  await waitForContactForm(page);
 
   await page.getByLabel(/Full name/i).fill("E2E Tester");
   await page.getByLabel(/Email address/i).fill("e2e@example.com");
@@ -42,9 +44,17 @@ test("home to organizations to contact submission", async ({ page }) => {
   await page
     .getByLabel(/Message/i)
     .fill("This is an automated end-to-end message used for deployment verification.");
+  await expect(page.getByLabel(/Full name/i)).toHaveValue("E2E Tester");
+  await expect(page.getByLabel(/Email address/i)).toHaveValue("e2e@example.com");
 
+  const contactResponse = page.waitForResponse(
+    (response) =>
+      response.url().includes("/api/v1/contact") && response.request().method() === "POST",
+  );
   await page.getByRole("button", { name: "Send message" }).click();
-  await expect(page.getByText(/your message has been received/i)).toBeVisible();
+  const response = await contactResponse;
+  expect(response.status(), await response.text()).toBe(201);
+  await expect(page.getByText(/your message has been received/i)).toBeVisible({ timeout: 15_000 });
 
   expect(
     consoleErrors,

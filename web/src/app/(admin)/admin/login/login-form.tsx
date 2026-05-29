@@ -52,30 +52,35 @@ export function AdminLoginForm() {
 
     setSubmitting(true);
     setErrors({});
-    const response = await fetch("/api/v1/auth/login", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ email, password }),
-    });
 
-    if (response.status === 200) {
-      const callbackUrl = sanitizeCallbackUrl(searchParams.get("callbackUrl"));
-      router.replace(callbackUrl);
-      return;
-    }
-
-    if (response.status === 429) {
-      const payload = (await response.json()) as { retryAfter?: number };
-      const seconds = typeof payload.retryAfter === "number" ? payload.retryAfter : 60;
-      setErrors({
-        form: `Too many login attempts. Try again in ${seconds} seconds.`,
+    try {
+      const response = await fetch("/api/v1/auth/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, password }),
       });
-      setSubmitting(false);
-      return;
-    }
 
-    setErrors({ form: "Invalid email or password." });
-    setSubmitting(false);
+      if (response.status === 200) {
+        const callbackUrl = sanitizeCallbackUrl(searchParams.get("callbackUrl"));
+        router.replace(callbackUrl);
+        return;
+      }
+
+      if (response.status === 429) {
+        const payload = (await response.json()) as { retryAfter?: number };
+        const seconds = typeof payload.retryAfter === "number" ? payload.retryAfter : 60;
+        setErrors({
+          form: `Too many login attempts. Try again in ${seconds} seconds.`,
+        });
+        return;
+      }
+
+      setErrors({ form: "Invalid email or password." });
+    } catch {
+      setErrors({ form: "Invalid email or password." });
+    } finally {
+      setSubmitting(false);
+    }
   }
 
   return (
