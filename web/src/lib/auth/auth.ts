@@ -9,7 +9,7 @@ import { users } from "@/lib/db/schema";
 
 const credentialsSchema = z.object({
   email: z.string().trim().email(),
-  password: z.string().min(8).max(200),
+  password: z.string().min(8).max(256),
 });
 
 export const { handlers, auth, signIn, signOut } = NextAuth({

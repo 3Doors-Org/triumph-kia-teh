@@ -44,6 +44,8 @@ export function AdminLoginForm() {
     }
     if (password.length < 8) {
       nextErrors.password = "Password must be at least 8 characters.";
+    } else if (password.length > 256) {
+      nextErrors.password = "Password must be 256 characters or fewer.";
     }
     if (Object.keys(nextErrors).length > 0) {
       setErrors(nextErrors);
@@ -72,6 +74,24 @@ export function AdminLoginForm() {
         setErrors({
           form: `Too many login attempts. Try again in ${seconds} seconds.`,
         });
+        return;
+      }
+
+      if (response.status === 400) {
+        const payload = (await response.json()) as { fields?: Record<string, string> };
+        const passwordError = payload.fields?.password;
+        if (passwordError) {
+          setErrors({ password: passwordError });
+          return;
+        }
+        setErrors({
+          form: "Check your email and password format. Very long generated passwords may exceed the limit.",
+        });
+        return;
+      }
+
+      if (response.status === 403) {
+        setErrors({ form: "Login blocked by security policy. Contact the site operator." });
         return;
       }
 

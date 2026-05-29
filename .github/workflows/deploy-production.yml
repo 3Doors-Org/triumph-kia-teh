@@ -49,11 +49,22 @@ jobs:
           PORT="$(printf '%s' "${PRODUCTION_PORT}" | tr -d '\r\n' | xargs)"
           USER="$(printf '%s' "${PRODUCTION_USER}" | tr -d '\r\n' | xargs)"
           APP_DIR="$(printf '%s' "${PRODUCTION_APP_DIR}" | tr -d '\r\n' | xargs)"
-          HEALTH_URL="$(printf '%s' "${PRODUCTION_HEALTHCHECK_URL}" | tr -d '\r\n' | xargs)"
+          PUBLIC_HEALTH_URL="$(printf '%s' "${PRODUCTION_HEALTHCHECK_URL}" | tr -d '\r\n' | xargs)"
+          LOCAL_HEALTH_URL="http://127.0.0.1:3000/api/health"
 
           if [ -z "${APP_DIR}" ]; then
             echo "PRODUCTION_APP_DIR is empty after trimming whitespace."
             exit 1
+          fi
+
+          OPTIONAL_PUBLIC_CHECK=""
+          if [ -n "${PUBLIC_HEALTH_URL}" ]; then
+            OPTIONAL_PUBLIC_CHECK="
+              echo 'Optional public health check: ${PUBLIC_HEALTH_URL}'
+              curl --silent --show-error --max-time 15 $(printf '%q' "${PUBLIC_HEALTH_URL}") \\
+                && echo 'Public health check passed.' \\
+                || echo 'Public health check failed (often Cloudflare 525 until nginx-proxy/Lets Encrypt is ready). Deploy is still OK if local check passed.'
+            "
           fi
 
           ssh -p "${PORT}" "${USER}@${HOST}" "
@@ -67,7 +78,21 @@ jobs:
             docker compose -f docker-compose.production.yml --env-file .env build web
             docker compose -f docker-compose.production.yml --env-file .env up -d web
             docker compose -f docker-compose.production.yml --env-file .env exec -T web pnpm --dir web db:migrate
-            curl --fail --show-error --silent $(printf '%q' "${HEALTH_URL}")
+
+            echo 'Waiting for app health on localhost:3000...'
+            for attempt in \$(seq 1 30); do
+              if curl --fail --show-error --silent $(printf '%q' "${LOCAL_HEALTH_URL}"); then
+                echo 'Local health check passed.'
+                break
+              fi
+              if [ \"\${attempt}\" -eq 30 ]; then
+                echo 'Local health check failed after 30 attempts.'
+                docker compose -f docker-compose.production.yml --env-file .env logs --tail=80 web || true
+                exit 1
+              fi
+              sleep 2
+            done
+            ${OPTIONAL_PUBLIC_CHECK}
           " | tee production-deploy.log
 
       - name: Upload deploy logs on failure

@@ -11,7 +11,7 @@ import { enforceAuthLoginRateLimit } from "@/lib/security/rate-limit";
 
 const loginSchema = z.object({
   email: z.string().trim().email(),
-  password: z.string().min(8).max(200),
+  password: z.string().min(8).max(256),
 });
 
 function zodErrorToFields(error: z.ZodError): Record<string, string> {
