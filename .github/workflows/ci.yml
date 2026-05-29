@@ -71,6 +71,10 @@ jobs:
 
       - name: Build
         run: pnpm build
+        env:
+          NEXT_PUBLIC_PLAUSIBLE_DOMAIN: triumphkiateh.com
+          NEXT_PUBLIC_PLAUSIBLE_API_HOST: https://plausible.io
+          PLAUSIBLE_API_HOST: https://plausible.io
 
       - name: Bundle budget warning check
         run: pnpm --dir web check:bundle-budget

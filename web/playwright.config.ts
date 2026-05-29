@@ -9,11 +9,11 @@ export default defineConfig({
     headless: true,
   },
   webServer: {
-    command: process.env.CI ? "pnpm start -p 3000" : "pnpm dev -p 3000",
+    command: "pnpm dev -p 3000",
     url: "http://127.0.0.1:3000",
     reuseExistingServer: !process.env.CI,
     env: {
-      NODE_ENV: process.env.CI ? "production" : "development",
+      NODE_ENV: "development",
       DATABASE_URL:
         process.env.DATABASE_URL ??
         "postgresql://migration_user:migration_password@127.0.0.1:5432/personal_website",

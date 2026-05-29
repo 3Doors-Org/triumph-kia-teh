@@ -17,7 +17,6 @@ import {
 } from "@/lib/writing/queries";
 
 export const revalidate = 300;
-export const dynamicParams = false;
 
 export async function generateStaticParams() {
   try {
