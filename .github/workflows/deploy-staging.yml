@@ -22,27 +22,51 @@ jobs:
           ssh-private-key: ${{ secrets.STAGING_SSH_KEY }}
 
       - name: Add staging host to known_hosts
+        env:
+          STAGING_HOST: ${{ secrets.STAGING_HOST }}
+          STAGING_PORT: ${{ secrets.STAGING_PORT }}
         run: |
+          set -euo pipefail
           mkdir -p ~/.ssh
-          ssh-keyscan -p "${{ secrets.STAGING_PORT }}" "${{ secrets.STAGING_HOST }}" >> ~/.ssh/known_hosts
+          HOST="$(printf '%s' "${STAGING_HOST}" | tr -d '\r\n' | xargs)"
+          PORT="$(printf '%s' "${STAGING_PORT}" | tr -d '\r\n' | xargs)"
+          ssh-keyscan -p "${PORT}" "${HOST}" >> ~/.ssh/known_hosts
 
       - name: Deploy and migrate
         id: deploy
+        env:
+          STAGING_HOST: ${{ secrets.STAGING_HOST }}
+          STAGING_PORT: ${{ secrets.STAGING_PORT }}
+          STAGING_USER: ${{ secrets.STAGING_USER }}
+          STAGING_APP_DIR: ${{ secrets.STAGING_APP_DIR }}
+          STAGING_HEALTHCHECK_URL: ${{ secrets.STAGING_HEALTHCHECK_URL }}
         run: |
           set -euo pipefail
-          ssh -p "${{ secrets.STAGING_PORT }}" "${{ secrets.STAGING_USER }}@${{ secrets.STAGING_HOST }}" '
+          HOST="$(printf '%s' "${STAGING_HOST}" | tr -d '\r\n' | xargs)"
+          PORT="$(printf '%s' "${STAGING_PORT}" | tr -d '\r\n' | xargs)"
+          USER="$(printf '%s' "${STAGING_USER}" | tr -d '\r\n' | xargs)"
+          APP_DIR="$(printf '%s' "${STAGING_APP_DIR}" | tr -d '\r\n' | xargs)"
+          HEALTH_URL="$(printf '%s' "${STAGING_HEALTHCHECK_URL}" | tr -d '\r\n' | xargs)"
+          BRANCH="$(printf '%s' "${GITHUB_REF_NAME}" | tr -d '\r\n' | xargs)"
+
+          if [ -z "${APP_DIR}" ]; then
+            echo "STAGING_APP_DIR is empty after trimming whitespace."
+            exit 1
+          fi
+
+          ssh -p "${PORT}" "${USER}@${HOST}" "
             set -euo pipefail
-            cd "${{ secrets.STAGING_APP_DIR }}"
+            cd $(printf '%q' "${APP_DIR}")
             test -f .env
             git fetch origin
-            git checkout "${{ github.ref_name }}"
-            git reset --hard "origin/${{ github.ref_name }}"
-            grep -E "^NEXT_PUBLIC_|^PLAUSIBLE_API_HOST" .env > web/.env.production
+            git checkout $(printf '%q' "${BRANCH}")
+            git reset --hard $(printf '%q' "origin/${BRANCH}")
+            grep -E '^NEXT_PUBLIC_|^PLAUSIBLE_API_HOST' .env > web/.env.production
             docker compose -f docker-compose.production.yml --env-file .env build web
             docker compose -f docker-compose.production.yml --env-file .env up -d web
             docker compose -f docker-compose.production.yml --env-file .env exec -T web pnpm --dir web db:migrate
-            curl --fail --show-error --silent "${{ secrets.STAGING_HEALTHCHECK_URL }}"
-          ' | tee staging-deploy.log
+            curl --fail --show-error --silent $(printf '%q' "${HEALTH_URL}")
+          " | tee staging-deploy.log
 
       - name: Upload deploy logs on failure
         if: failure()
