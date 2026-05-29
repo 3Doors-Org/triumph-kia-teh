@@ -33,6 +33,7 @@ function buildCsp() {
 
 const nextConfig: NextConfig = {
   allowedDevOrigins: ["127.0.0.1"],
+  serverExternalPackages: ["isomorphic-dompurify", "jsdom"],
   webpack(config) {
     config.ignoreWarnings = [
       ...(config.ignoreWarnings ?? []),

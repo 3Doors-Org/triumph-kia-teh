@@ -7,7 +7,7 @@ FROM base AS deps
 WORKDIR /app
 
 COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
-COPY web/package.json web/pnpm-lock.yaml ./web/
+COPY web/package.json ./web/
 
 RUN pnpm install --frozen-lockfile
 
@@ -18,7 +18,14 @@ COPY --from=deps /app/node_modules ./node_modules
 COPY --from=deps /app/web/node_modules ./web/node_modules
 COPY . .
 
+ARG NEXT_PUBLIC_APP_URL=https://triumphkiateh.com
+ARG NEXT_PUBLIC_TURNSTILE_SITE_KEY=
+ARG PLAUSIBLE_API_HOST=
 ENV NEXT_TELEMETRY_DISABLED=1
+ENV NEXT_PUBLIC_APP_URL=$NEXT_PUBLIC_APP_URL
+ENV NEXT_PUBLIC_TURNSTILE_SITE_KEY=$NEXT_PUBLIC_TURNSTILE_SITE_KEY
+ENV PLAUSIBLE_API_HOST=$PLAUSIBLE_API_HOST
+
 RUN pnpm --dir web build
 
 FROM base AS runner

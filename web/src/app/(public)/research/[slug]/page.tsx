@@ -13,8 +13,12 @@ import { getCachedPublishedResearchSlugs, getCachedResearchBySlug } from "@/lib/
 export const revalidate = 300;
 
 export async function generateStaticParams() {
-  const slugs = await getCachedPublishedResearchSlugs();
-  return slugs.map((slug) => ({ slug }));
+  try {
+    const slugs = await getCachedPublishedResearchSlugs();
+    return slugs.map((slug) => ({ slug }));
+  } catch {
+    return [];
+  }
 }
 
 export async function generateMetadata({

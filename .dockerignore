@@ -27,8 +27,6 @@ extracts
 # Tests and CI
 .github
 **/tests
-**/*.test.ts
-**/*.spec.ts
 playwright-report
 test-results
 lighthouserc.json
