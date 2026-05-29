@@ -1,8 +1,30 @@
+import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 
-import { PageSectionSkeleton } from "@/components/layout/page-section-skeleton";
+import { OrganizationDetail } from "@/components/organizations/organizations-pages";
+import { getOrganizationBySlug } from "@/lib/data/public-content";
+import { isOrganizationSlug as isValidOrganizationSlug } from "@/lib/organizations/slugs";
+import { buildPageMetadata } from "@/lib/seo";
+import { buildOrganizationJsonLd, toJsonLdScriptContent } from "@/lib/seo/jsonld";
 
-const ORGS = new Set(["3doors", "palaverinstitute", "dewisefoundation"]);
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ org: string }>;
+}): Promise<Metadata> {
+  const { org } = await params;
+  const data = await getOrganizationBySlug(org);
+
+  if (!data) {
+    return { title: "Organization not found | Triumph Kia Teh" };
+  }
+
+  return buildPageMetadata({
+    title: `${data.organization.name} | Triumph Kia Teh`,
+    description: data.organization.mission,
+    canonicalPath: `/organizations/${data.organization.slug}`,
+  });
+}
 
 export default async function OrganizationDetailPage({
   params,
@@ -11,14 +33,29 @@ export default async function OrganizationDetailPage({
 }) {
   const { org } = await params;
 
-  if (!ORGS.has(org)) {
+  if (!isValidOrganizationSlug(org)) {
     notFound();
   }
 
+  const data = await getOrganizationBySlug(org);
+  if (!data) {
+    notFound();
+  }
+
+  const jsonLd = buildOrganizationJsonLd({
+    name: data.organization.name,
+    slug: data.organization.slug,
+    description: data.organization.mission,
+    externalUrl: data.organization.externalUrl,
+  });
+
   return (
-    <PageSectionSkeleton
-      title={`Organization: ${org}`}
-      description="Organization subpage shell with reusable structure for hero, impact, narrative, and related content."
-    />
+    <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: toJsonLdScriptContent(jsonLd) }}
+      />
+      <OrganizationDetail {...data} />
+    </>
   );
 }

@@ -1,0 +1,10 @@
+{
+  "generatedAt": "2026-05-08T08:40:18.965Z",
+  "totalBytes": 1268015,
+  "maxChunkBytes": 270092,
+  "maxChunkFile": "0q03d.mspfahp.js",
+  "warnings": [
+    "Total JS chunk size 1238.3KB exceeds warning budget 650.0KB.",
+    "Largest JS chunk 263.8KB (0q03d.mspfahp.js) exceeds warning budget 220.0KB."
+  ]
+}

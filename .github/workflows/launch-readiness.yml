@@ -1,0 +1,52 @@
+name: Launch Readiness
+
+on:
+  workflow_dispatch:
+    inputs:
+      base_url:
+        description: "Target base URL to validate"
+        required: true
+        type: string
+      deep_path:
+        description: "Additional deep content path"
+        required: false
+        type: string
+        default: "/writing"
+
+permissions:
+  contents: read
+
+jobs:
+  readiness:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 10.19.0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20.19.5
+          cache: "pnpm"
+          cache-dependency-path: pnpm-lock.yaml
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Run launch readiness checks
+        run: pnpm --dir web launch:readiness --base-url="${{ inputs.base_url }}" --deep-path="${{ inputs.deep_path }}"
+
+      - name: Upload readiness report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: launch-readiness-report
+          path: web/.reports/launch-readiness.json
+          if-no-files-found: error

@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Inter, Playfair_Display, Source_Serif_4 } from "next/font/google";
+import { buildDefaultSiteMetadata } from "@/lib/seo";
 import "./globals.css";
 
 const inter = Inter({
@@ -19,10 +20,7 @@ const sourceSerif = Source_Serif_4({
   weight: ["400", "600"],
 });
 
-export const metadata: Metadata = {
-  title: "Triumph Kia Teh",
-  description: "Personal digital institution for writing, impact, and research.",
-};
+export const metadata: Metadata = buildDefaultSiteMetadata();
 
 export default function RootLayout({
   children,
@@ -33,8 +31,11 @@ export default function RootLayout({
     <html
       lang="en"
       className={`${inter.variable} ${playfair.variable} ${sourceSerif.variable} h-full antialiased`}
+      suppressHydrationWarning
     >
-      <body className="min-h-full flex flex-col">{children}</body>
+      <body className="min-h-full flex flex-col" suppressHydrationWarning>
+        {children}
+      </body>
     </html>
   );
 }

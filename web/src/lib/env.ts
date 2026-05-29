@@ -22,10 +22,6 @@ const requiredInNonDev: ReadonlyArray<keyof ServerEnv> = [
 
 let cachedEnv: ServerEnv | null = null;
 
-/**
- * Parses server environment values and optionally enforces required keys.
- * Use `strictRequired: true` for staging/production boot checks.
- */
 export function getServerEnv(options?: { strictRequired?: boolean }): ServerEnv {
   if (cachedEnv) return cachedEnv;
 

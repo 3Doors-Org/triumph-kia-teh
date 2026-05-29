@@ -1,11 +1,11 @@
-import { config as loadEnv } from "dotenv";
 import { drizzle } from "drizzle-orm/node-postgres";
 import { Pool } from "pg";
 
+import { loadWorkspaceEnvFiles } from "@/lib/env/workspace-env";
+
 import * as schema from "./schema";
 
-loadEnv({ path: "../.env" });
-loadEnv();
+loadWorkspaceEnvFiles();
 
 const connectionString = process.env.DATABASE_URL;
 

@@ -5,6 +5,8 @@ services:
       dockerfile: web/Dockerfile
     image: personal-website-web:production
     restart: unless-stopped
+    env_file:
+      - .env
     environment:
       NODE_ENV: production
       NEXTAUTH_URL: ${NEXTAUTH_URL:?Set NEXTAUTH_URL in runtime env}

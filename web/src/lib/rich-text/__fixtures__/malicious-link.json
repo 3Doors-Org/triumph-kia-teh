@@ -1,0 +1,19 @@
+{
+  "type": "doc",
+  "content": [
+    {
+      "type": "paragraph",
+      "content": [
+        {
+          "type": "text",
+          "text": "Do not click",
+          "marks": [{ "type": "link", "attrs": { "href": "javascript:alert(1)" } }]
+        }
+      ]
+    },
+    {
+      "type": "paragraph",
+      "content": [{ "type": "text", "text": "<script>alert('x')</script>" }]
+    }
+  ]
+}

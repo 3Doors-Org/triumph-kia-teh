@@ -1,18 +1,22 @@
+import { organizationPublicProfilePath } from "@/lib/organizations/slugs";
+
 export const routes = {
   public: {
     home: "/",
     about: "/about",
     organizations: "/organizations",
-    org3doors: "/organizations/3doors",
-    orgPalaverInstitute: "/organizations/palaverinstitute",
-    orgDewiseFoundation: "/organizations/dewisefoundation",
+    org3doors: organizationPublicProfilePath("3doors"),
+    orgPalaverInstitute: organizationPublicProfilePath("palaverinstitute"),
+    orgDewiseFoundation: organizationPublicProfilePath("dewisefoundation"),
     communityImpact: "/community-impact",
     achievements: "/achievements",
     media: "/media",
     writing: "/writing",
     writingBySlug: (slug: string) => `/writing/${slug}`,
     research: "/research",
+    researchBySlug: (slug: string) => `/research/${slug}`,
     contact: "/contact",
+    testimonials: "/testimonials",
   },
   admin: {
     dashboard: "/admin",
@@ -25,9 +29,16 @@ export const routes = {
     testimonials: "/admin/testimonials",
     leads: "/admin/leads",
     assets: "/admin/assets",
+    profilePortrait: "/admin/profile-portrait",
     exitIntent: "/admin/exit-intent",
     navigation: "/admin/navigation",
     analytics: "/admin/analytics",
+    siteContent: "/admin/site-content",
+    siteContentAbout: "/admin/site-content/about",
+    siteContentOrganizations: "/admin/site-content/organizations",
+    siteContentOrganizationNew: "/admin/site-content/organizations/new",
+    siteContentOrganizationEdit: (id: string) => `/admin/site-content/organizations/${encodeURIComponent(id)}/edit`,
+    metricsNew: "/admin/metrics/new",
   },
   dev: {
     ui: "/dev/ui",

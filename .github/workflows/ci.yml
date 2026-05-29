@@ -55,6 +55,14 @@ jobs:
       - name: Migration dry-run against ephemeral Postgres
         run: pnpm --dir web db:migrate
 
+      - name: Unit tests
+        run: pnpm test
+        env:
+          NODE_ENV: test
+
+      - name: Validate internal links
+        run: pnpm --dir web validate:links
+
       - name: Lint
         run: pnpm lint
 
@@ -63,6 +71,28 @@ jobs:
 
       - name: Build
         run: pnpm build
+
+      - name: Bundle budget warning check
+        run: pnpm --dir web check:bundle-budget
+
+      - name: Upload bundle budget report
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: bundle-budget-report
+          path: web/.reports/bundle-budget.json
+          if-no-files-found: warn
+
+      - name: Install Playwright Chromium
+        run: pnpm --dir web exec playwright install chromium
+
+      - name: End-to-end tests
+        run: pnpm test:e2e
+        env:
+          CI: true
+          NEXT_PUBLIC_APP_URL: http://127.0.0.1:3000
+          NEXT_PUBLIC_E2E_BYPASS_TURNSTILE: "true"
+          TEST_BYPASS_TURNSTILE: "true"
 
       - name: Dependency audit (critical only)
         run: pnpm audit:deps

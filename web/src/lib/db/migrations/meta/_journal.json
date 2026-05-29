@@ -8,6 +8,83 @@
       "when": 1777382108015,
       "tag": "0000_first_human_robot",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1777561675319,
+      "tag": "0001_foamy_maverick",
+      "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1777929335330,
+      "tag": "0002_posts_tags",
+      "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1778156295884,
+      "tag": "0003_research_items",
+      "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1778221200000,
+      "tag": "0004_achievements_media",
+      "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "7",
+      "when": 1778236800000,
+      "tag": "0005_testimonials",
+      "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "7",
+      "when": 1778240400000,
+      "tag": "0006_assets",
+      "breakpoints": true
+    },
+    {
+      "idx": 7,
+      "version": "7",
+      "when": 1778326800000,
+      "tag": "0007_leads_admin_notes",
+      "breakpoints": true
+    },
+    {
+      "idx": 8,
+      "version": "7",
+      "when": 1778326800001,
+      "tag": "0008_org_metrics_updated_at",
+      "breakpoints": true
+    },
+    {
+      "idx": 9,
+      "version": "7",
+      "when": 1778326800002,
+      "tag": "0009_exit_intent_trigger_delay",
+      "breakpoints": true
+    },
+    {
+      "idx": 10,
+      "version": "7",
+      "when": 1778400000000,
+      "tag": "0010_site_profile",
+      "breakpoints": true
+    },
+    {
+      "idx": 11,
+      "version": "7",
+      "when": 1778500000000,
+      "tag": "0011_about_page_config",
+      "breakpoints": true
     }
   ]
 }

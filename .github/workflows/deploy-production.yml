@@ -1,0 +1,56 @@
+name: Deploy Production
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  deploy-production:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    environment: production
+    concurrency:
+      group: deploy-production
+      cancel-in-progress: false
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup SSH agent
+        uses: webfactory/ssh-agent@v0.9.0
+        with:
+          ssh-private-key: ${{ secrets.PRODUCTION_SSH_KEY }}
+
+      - name: Add production host to known_hosts
+        run: |
+          mkdir -p ~/.ssh
+          ssh-keyscan -p "${{ secrets.PRODUCTION_PORT }}" "${{ secrets.PRODUCTION_HOST }}" >> ~/.ssh/known_hosts
+
+      - name: Deploy and migrate
+        id: deploy
+        run: |
+          set -euo pipefail
+          ssh -p "${{ secrets.PRODUCTION_PORT }}" "${{ secrets.PRODUCTION_USER }}@${{ secrets.PRODUCTION_HOST }}" '
+            set -euo pipefail
+            cd "${{ secrets.PRODUCTION_APP_DIR }}"
+            test -f .env
+            git fetch origin
+            git checkout main
+            git reset --hard origin/main
+            grep -E "^NEXT_PUBLIC_|^PLAUSIBLE_API_HOST" .env > web/.env.production
+            docker compose -f docker-compose.production.yml --env-file .env build web
+            docker compose -f docker-compose.production.yml --env-file .env up -d web
+            docker compose -f docker-compose.production.yml --env-file .env exec -T web pnpm --dir web db:migrate
+            curl --fail --show-error --silent "${{ secrets.PRODUCTION_HEALTHCHECK_URL }}"
+          ' | tee production-deploy.log
+
+      - name: Upload deploy logs on failure
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: production-deploy-logs
+          path: production-deploy.log
+          retention-days: 7

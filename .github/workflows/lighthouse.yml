@@ -1,0 +1,63 @@
+name: Lighthouse CI
+
+on:
+  pull_request:
+    branches: ["main"]
+    paths:
+      - "web/**"
+      - ".github/workflows/lighthouse.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  lighthouse:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      DATABASE_URL: postgresql://migration_user:migration_password@localhost:5432/personal_website
+      MIGRATION_DATABASE_URL: postgresql://migration_user:migration_password@localhost:5432/personal_website
+      NEXTAUTH_URL: http://127.0.0.1:3000
+      NEXTAUTH_SECRET: ci-placeholder-secret-at-least-32-chars
+    services:
+      postgres:
+        image: postgres:15-alpine
+        env:
+          POSTGRES_DB: personal_website
+          POSTGRES_USER: migration_user
+          POSTGRES_PASSWORD: migration_password
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U migration_user -d personal_website"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 10.19.0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20.19.5
+          cache: "pnpm"
+          cache-dependency-path: pnpm-lock.yaml
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Migrate
+        run: pnpm --dir web db:migrate
+
+      - name: Build
+        run: pnpm --dir web build
+
+      - name: Lighthouse autorun
+        run: pnpm --dir web exec lhci autorun --config=lighthouserc.json

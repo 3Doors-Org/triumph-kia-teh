@@ -1,36 +1,36 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Web application (`personal-website-web`)
 
-## Getting Started
+Next.js App Router application for the Triumph Kia Teh platform. Workspace commands run from the repository root with `pnpm --dir web <script>` or from this directory with `pnpm <script>`.
 
-First, run the development server:
+## Quick start
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
+# From repo root
+pnpm install
 pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Scripts
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+| Command | Purpose |
+|---------|---------|
+| `pnpm dev` | Development server |
+| `pnpm build` / `pnpm start` | Production build and server |
+| `pnpm typecheck` | TypeScript |
+| `pnpm test` | Unit tests (`tsx --test`) |
+| `pnpm test:e2e` | Playwright |
+| `pnpm db:migrate` | Apply SQL migrations |
+| `pnpm db:apply-*` | Sync portfolio content modules to Postgres |
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## Admin RBAC
 
-## Learn More
+Enforce roles on the server only:
 
-To learn more about Next.js, take a look at the following resources:
+- `owner` — full access including leads and site configuration
+- `editor` — content modules; not owner-only routes
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+Use `requireRole()` from `src/lib/auth/require-role.ts`. Do not accept role values from the client.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## Project docs
 
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+See the [root README](../README.md) for CI/CD, deployment, and environment setup.

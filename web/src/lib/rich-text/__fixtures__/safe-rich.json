@@ -1,0 +1,18 @@
+{
+  "type": "doc",
+  "content": [
+    {
+      "type": "heading",
+      "attrs": { "level": 2 },
+      "content": [{ "type": "text", "text": "Reliable public systems" }]
+    },
+    {
+      "type": "paragraph",
+      "content": [
+        { "type": "text", "text": "Strong execution requires " },
+        { "type": "text", "text": "discipline", "marks": [{ "type": "bold" }] },
+        { "type": "text", "text": " and verifiable process loops." }
+      ]
+    }
+  ]
+}

@@ -33,6 +33,6 @@ yarn-error.log*
 .cursor/
 
 # markdown docs (keep local by default)
-*.md
-!README.md
-!CONTRIBUTING.md
+#*.md
+#!README.md
+#!CONTRIBUTING.md

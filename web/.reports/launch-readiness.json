@@ -1,0 +1,61 @@
+{
+  "generatedAt": "2026-05-08T14:32:28.926Z",
+  "baseUrl": "http://127.0.0.1:3000/",
+  "checks": [
+    {
+      "name": "GET /",
+      "ok": true,
+      "detail": "status=200"
+    },
+    {
+      "name": "GET /contact",
+      "ok": true,
+      "detail": "status=200"
+    },
+    {
+      "name": "GET /admin/login",
+      "ok": true,
+      "detail": "status=200"
+    },
+    {
+      "name": "GET /contact",
+      "ok": true,
+      "detail": "status=200"
+    },
+    {
+      "name": "HTTP -> HTTPS redirect",
+      "ok": true,
+      "detail": "skipped (base URL is not HTTPS)"
+    },
+    {
+      "name": "Header content-security-policy",
+      "ok": true,
+      "detail": "skipped (localhost)"
+    },
+    {
+      "name": "Header strict-transport-security",
+      "ok": true,
+      "detail": "skipped (localhost)"
+    },
+    {
+      "name": "Header x-frame-options",
+      "ok": true,
+      "detail": "skipped (localhost)"
+    },
+    {
+      "name": "Header x-content-type-options",
+      "ok": true,
+      "detail": "skipped (localhost)"
+    },
+    {
+      "name": "Header referrer-policy",
+      "ok": true,
+      "detail": "skipped (localhost)"
+    },
+    {
+      "name": "Header permissions-policy",
+      "ok": true,
+      "detail": "skipped (localhost)"
+    }
+  ]
+}
