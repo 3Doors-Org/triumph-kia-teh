@@ -1,7 +1,8 @@
 import { NextResponse } from "next/server";
 import { z } from "zod";
 
-import { signIn } from "@/lib/auth/auth";
+import { authenticateCredentials } from "@/lib/auth/credentials-login";
+import { applyAuthResponseCookies } from "@/lib/auth/cookies";
 import { isValidSameOriginRequest } from "@/lib/auth/same-origin";
 import { AUTH_ERRORS } from "@/lib/auth/errors";
 import { apiError } from "@/lib/api/error-response";
@@ -64,17 +65,20 @@ export async function POST(request: Request) {
     );
   }
 
-  try {
-    await signIn("credentials", {
-      email: emailForRateLimit,
-      password: parsed.data.password,
-      redirect: false,
-    });
-  } catch {
+  const authResult = await authenticateCredentials({
+    email: emailForRateLimit,
+    password: parsed.data.password,
+    callbackUrl: "/admin",
+    requestHeaders: request.headers,
+  });
+
+  if (!authResult.ok) {
     logAuthAudit({ event: "auth_login_failed", email: emailForRateLimit, reason: "invalid_credentials" });
     return NextResponse.json({ error: AUTH_ERRORS.invalidCredentials }, { status: 401 });
   }
 
   logAuthAudit({ event: "auth_login_succeeded", email: emailForRateLimit });
-  return NextResponse.json({ ok: true }, { status: 200 });
+  const response = NextResponse.json({ ok: true }, { status: 200 });
+  applyAuthResponseCookies(response, authResult.cookies);
+  return response;
 }

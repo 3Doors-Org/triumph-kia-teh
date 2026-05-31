@@ -12,7 +12,9 @@ const credentialsSchema = z.object({
   password: z.string().min(8).max(256),
 });
 
-export const { handlers, auth, signIn, signOut } = NextAuth({
+export const authConfig = {
+  basePath: "/api/auth",
+  secret: process.env.AUTH_SECRET ?? process.env.NEXTAUTH_SECRET,
   providers: [
     Credentials({
       credentials: {
@@ -72,4 +74,6 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
     },
   },
   trustHost: true,
-});
+} satisfies Parameters<typeof NextAuth>[0];
+
+export const { handlers, auth, signIn, signOut } = NextAuth(authConfig);

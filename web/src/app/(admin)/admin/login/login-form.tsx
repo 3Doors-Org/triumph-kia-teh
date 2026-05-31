@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useSearchParams } from "next/navigation";
 
 type LoginFields = {
   email: string;
@@ -25,7 +25,6 @@ function sanitizeCallbackUrl(value: string | null): string {
 }
 
 export function AdminLoginForm() {
-  const router = useRouter();
   const searchParams = useSearchParams();
 
   const [fields, setFields] = useState<LoginFields>({ email: "", password: "" });
@@ -60,11 +59,12 @@ export function AdminLoginForm() {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, password }),
+        credentials: "include",
       });
 
       if (response.status === 200) {
         const callbackUrl = sanitizeCallbackUrl(searchParams.get("callbackUrl"));
-        router.replace(callbackUrl);
+        window.location.assign(callbackUrl);
         return;
       }
 

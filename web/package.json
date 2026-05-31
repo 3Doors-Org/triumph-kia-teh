@@ -33,6 +33,7 @@
     "db:apply-about": "tsx scripts/apply-about-content.ts"
   },
   "dependencies": {
+    "@auth/core": "0.41.2",
     "@aws-sdk/client-s3": "^3.1045.0",
     "@aws-sdk/s3-request-presigner": "^3.1045.0",
     "@hookform/resolvers": "^5.2.2",
