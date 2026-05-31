@@ -3,6 +3,17 @@ import { getToken } from "next-auth/jwt";
 
 import { evaluateAdminMiddlewarePolicy } from "@/lib/auth/middleware-policy";
 
+function shouldUseSecureSessionCookies(request: NextRequest): boolean {
+  if (process.env.NODE_ENV === "production") {
+    return true;
+  }
+
+  return (
+    request.nextUrl.protocol === "https:" ||
+    request.headers.get("x-forwarded-proto") === "https"
+  );
+}
+
 export async function proxy(request: NextRequest) {
   if (
     process.env.NODE_ENV === "production" &&
@@ -15,6 +26,7 @@ export async function proxy(request: NextRequest) {
     const token = await getToken({
       req: request,
       secret: process.env.AUTH_SECRET ?? process.env.NEXTAUTH_SECRET,
+      secureCookie: shouldUseSecureSessionCookies(request),
     });
     const decision = evaluateAdminMiddlewarePolicy({
       pathname: request.nextUrl.pathname,
