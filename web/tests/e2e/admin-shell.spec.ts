@@ -40,4 +40,16 @@ test.describe("admin shell", () => {
     await expect(page).toHaveURL(/\/admin\/research$/);
     await expect(page.locator("main").getByRole("heading", { name: "Research", exact: true })).toBeVisible();
   });
+
+  test("logs out and returns to the login page", async ({ page }) => {
+    await signInAsSeedOwner(page);
+    await expect(page).toHaveURL(/\/admin$/);
+
+    await page.getByRole("button", { name: "Log out" }).first().click();
+    await expect(page).toHaveURL(/\/admin\/login$/);
+    await expect(page.getByRole("heading", { name: "Admin Login" })).toBeVisible();
+
+    await page.goto("/admin");
+    await expect(page).toHaveURL(/\/admin\/login/);
+  });
 });
