@@ -28,6 +28,8 @@ export function ContactForm({
   e2eTurnstileBypass?: boolean;
 }) {
   const [submitState, setSubmitState] = useState<"idle" | "success" | "error">("idle");
+  const [submitErrorMessage, setSubmitErrorMessage] = useState<string | null>(null);
+  const [turnstileLoadError, setTurnstileLoadError] = useState(false);
   const turnstileSiteKey = process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY?.trim() ?? "";
   const hasValidTurnstileSiteKey =
     turnstileSiteKey.length > 0 &&
@@ -38,6 +40,9 @@ export function ContactForm({
   const bypassTurnstile =
     bypassTurnstileByEnv ||
     (!hasValidTurnstileSiteKey && process.env.NODE_ENV !== "production");
+  const turnstileRequired = !bypassTurnstile;
+  const turnstileUnavailable =
+    turnstileRequired && (!hasValidTurnstileSiteKey || turnstileLoadError);
 
   const defaultInquiryType = useMemo((): InquiryType | "" => {
     if (inquiryType && inquiryTypeValues.includes(inquiryType as InquiryType)) {
@@ -68,6 +73,16 @@ export function ContactForm({
 
   async function onSubmit(values: ContactFormValues) {
     setSubmitState("idle");
+    setSubmitErrorMessage(null);
+
+    if (turnstileUnavailable) {
+      setSubmitState("error");
+      setSubmitErrorMessage(
+        "The security check is unavailable right now. Please email kiattriumph@gmail.com directly.",
+      );
+      return;
+    }
+
     const payload: ContactInput = {
       ...values,
       inquiryType: values.inquiryType as ContactInput["inquiryType"],
@@ -81,6 +96,24 @@ export function ContactForm({
     });
 
     if (!response.ok) {
+      let message = "Submission failed. Please verify your details and try again.";
+      try {
+        const errorBody = (await response.json()) as { error?: string; retryAfter?: number };
+        if (response.status === 429 && typeof errorBody.retryAfter === "number") {
+          message = `Too many submissions. Please wait ${errorBody.retryAfter} seconds and try again.`;
+        } else if (errorBody.error === "CAPTCHA verification failed") {
+          message = "Security check failed. Please complete the verification and try again.";
+          form.setValue("turnstileToken", "", { shouldValidate: true });
+          setTurnstileLoadError(false);
+        } else if (errorBody.error === "Validation failed") {
+          message = "Please review the highlighted fields and try again.";
+        } else if (errorBody.error) {
+          message = errorBody.error;
+        }
+      } catch {
+        /* keep default message */
+      }
+      setSubmitErrorMessage(message);
       setSubmitState("error");
       return;
     }
@@ -184,17 +217,44 @@ export function ContactForm({
         <Input tabIndex={-1} autoComplete="off" {...form.register("website")} />
       </div>
 
-      {bypassTurnstile ? null : (
-        <Turnstile
-          siteKey={turnstileSiteKey}
-          onSuccess={(token) => {
-            form.setValue("turnstileToken", token, { shouldValidate: true });
-          }}
-          options={{ theme: "light" }}
-        />
-      )}
+      {turnstileRequired ? (
+        hasValidTurnstileSiteKey ? (
+          <Turnstile
+            siteKey={turnstileSiteKey}
+            onSuccess={(token) => {
+              setTurnstileLoadError(false);
+              form.setValue("turnstileToken", token, { shouldValidate: true });
+            }}
+            onError={() => {
+              setTurnstileLoadError(true);
+              form.setValue("turnstileToken", "", { shouldValidate: true });
+            }}
+            onExpire={() => {
+              form.setValue("turnstileToken", "", { shouldValidate: true });
+            }}
+            options={{ theme: "light" }}
+          />
+        ) : (
+          <p role="alert" className="rounded-md border border-[var(--color-destructive)]/30 bg-[var(--color-destructive)]/10 px-3 py-2 text-sm text-[var(--color-destructive)]">
+            The contact form security check is not configured. Please email{" "}
+            <a className="underline" href="mailto:kiattriumph@gmail.com">
+              kiattriumph@gmail.com
+            </a>{" "}
+            directly.
+          </p>
+        )
+      ) : null}
 
-      <Button type="submit" disabled={form.formState.isSubmitting || !turnstileToken}>
+      {turnstileLoadError ? (
+        <p role="alert" className="text-sm text-[var(--color-destructive)]">
+          Security check failed to load. Refresh the page or email kiattriumph@gmail.com directly.
+        </p>
+      ) : null}
+
+      <Button
+        type="submit"
+        disabled={form.formState.isSubmitting || (turnstileRequired && (!turnstileToken || turnstileUnavailable))}
+      >
         {form.formState.isSubmitting ? "Submitting..." : "Send message"}
       </Button>
 
@@ -206,7 +266,7 @@ export function ContactForm({
       ) : null}
       {submitState === "error" ? (
         <p role="alert" className="text-sm text-[var(--color-destructive)]">
-          Submission failed. Please verify your details and try again.
+          {submitErrorMessage ?? "Submission failed. Please verify your details and try again."}
         </p>
       ) : null}
     </form>

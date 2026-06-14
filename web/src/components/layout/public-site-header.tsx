@@ -103,7 +103,7 @@ export function PublicSiteHeader({
           >
             <motion.div
               id="mobile-nav-drawer-backdrop"
-              className="absolute inset-0 bg-[color-mix(in_srgb,var(--color-primary)_94%,transparent)] backdrop-blur-md"
+              className="absolute inset-0 bg-black/55 backdrop-blur-sm"
               aria-hidden
               onClick={() => setIsMobileMenuOpen(false)}
             />
@@ -115,28 +115,29 @@ export function PublicSiteHeader({
               transition={{ duration: reducedMotion ? 0 : 0.25 }}
               className="pointer-events-none absolute inset-x-4 top-[5.75rem]"
             >
-              <div className="pointer-events-auto rounded-xl border border-[var(--color-primary-fg)]/15 bg-[var(--color-primary)] p-4 shadow-xl">
-              <nav className="flex flex-col gap-1" aria-label="Primary navigation mobile drawer">
-                {navItems.map((item, index) => (
-                  <motion.div
-                    key={item.href}
-                    initial={{ opacity: 0, y: 14 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{
-                      duration: reducedMotion ? 0 : 0.3,
-                      delay: reducedMotion ? 0 : index * 0.07,
-                    }}
-                  >
-                    <Link
-                      href={item.href}
-                      className="block rounded-lg px-3 py-3 text-lg font-semibold text-[var(--color-primary-fg)] hover:bg-[var(--color-primary-fg)]/10 hover:text-[var(--color-accent)]"
-                      onClick={() => setIsMobileMenuOpen(false)}
+              <div className="pointer-events-auto rounded-xl border border-[var(--color-muted)] bg-[var(--color-card)] p-3 shadow-2xl">
+                <nav className="flex flex-col gap-1" aria-label="Primary navigation mobile drawer">
+                  {navItems.map((item, index) => (
+                    <motion.div
+                      key={item.href}
+                      initial={{ opacity: 0, y: 14 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{
+                        duration: reducedMotion ? 0 : 0.3,
+                        delay: reducedMotion ? 0 : index * 0.07,
+                      }}
                     >
-                      {item.label}
-                    </Link>
-                  </motion.div>
-                ))}
-              </nav>
+                      <Link
+                        href={item.href}
+                        className="block rounded-lg px-3 py-3 text-lg font-semibold text-[var(--color-foreground)] transition-colors hover:bg-[var(--color-muted)] hover:text-[var(--color-primary)]"
+                        style={{ color: "var(--color-foreground)" }}
+                        onClick={() => setIsMobileMenuOpen(false)}
+                      >
+                        {item.label}
+                      </Link>
+                    </motion.div>
+                  ))}
+                </nav>
               </div>
             </motion.div>
           </motion.div>

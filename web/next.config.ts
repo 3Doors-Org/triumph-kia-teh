@@ -5,16 +5,18 @@ function buildCsp() {
     process.env.NEXT_PUBLIC_PLAUSIBLE_API_HOST ?? process.env.PLAUSIBLE_API_HOST ?? "";
   const clarityHost = "https://www.clarity.ms";
   const clarityInsightsHost = "https://c.bing.com";
+  const turnstileHost = "https://challenges.cloudflare.com";
 
   const scriptSrc = ["'self'", "'unsafe-inline'"];
   const connectSrc = ["'self'"];
+  const frameSrc = ["'self'", turnstileHost];
 
   if (plausibleHost) {
     scriptSrc.push(plausibleHost);
     connectSrc.push(plausibleHost);
   }
-  scriptSrc.push(clarityHost);
-  connectSrc.push(clarityHost, clarityInsightsHost);
+  scriptSrc.push(clarityHost, turnstileHost);
+  connectSrc.push(clarityHost, clarityInsightsHost, turnstileHost);
 
   return [
     "default-src 'self'",
@@ -23,6 +25,7 @@ function buildCsp() {
     "img-src 'self' data: blob: https:",
     "font-src 'self' data:",
     `connect-src ${connectSrc.join(" ")}`,
+    `frame-src ${frameSrc.join(" ")}`,
     "frame-ancestors 'none'",
     "base-uri 'self'",
     "form-action 'self'",
