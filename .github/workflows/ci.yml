@@ -80,7 +80,7 @@ jobs:
         run: pnpm --dir web check:bundle-budget
 
       - name: Upload bundle budget report
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         if: always()
         with:
           name: bundle-budget-report

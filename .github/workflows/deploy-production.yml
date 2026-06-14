@@ -97,7 +97,7 @@ jobs:
 
       - name: Upload deploy logs on failure
         if: failure()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: production-deploy-logs
           path: production-deploy.log
